@@ -16,6 +16,7 @@ const User = require('./models/User')
 
 // Impot Routes
 const toughtsRoutes = require('./routes/toughtsRoutes')
+const authRoutes = require("./routes/authRoutes");
 
 // Import Controller
 const ToughtsController = require('./controllers/ToughtsController')
@@ -35,23 +36,23 @@ app.use(express.json());
 
 //session middleware
 app.use(
-    session({
-      name: 'session',
-      secret: 'nosso_secret',
-      resave: false,
-      saveUninitialized: false,
-      store: new FileStore({
-        logFn: function () {},
-        path: require('path').join(require('os').tmpdir(), 'sessions'),
-      }),
-      cookie: {
-        secure: false,
-        maxAge: 3600000,
-        expires: new Date(Date.now() + 3600000),
-        httpOnly: true,
-      },
+  session({
+    name: 'session',
+    secret: 'nosso_secret',
+    resave: false,
+    saveUninitialized: false,
+    store: new FileStore({
+      logFn: function () { },
+      path: require('path').join(require('os').tmpdir(), 'sessions'),
     }),
-  )
+    cookie: {
+      secure: false,
+      maxAge: 3600000,
+      expires: new Date(Date.now() + 3600000),
+      httpOnly: true,
+    },
+  }),
+)
 // flash messages
 app.use(flash())
 
@@ -60,20 +61,21 @@ app.use(express.static('public'))
 
 // set session response
 app.use((req, res, next) => {
-    if(req.session.userid) {
-        res.locals.session = req.session
-    }
-    next()
+  if (req.session.userid) {
+    res.locals.session = req.session
+  }
+  next()
 })
 
 // Routes
 app.use('/toughts', toughtsRoutes)
+app.use('/', authRoutes);
 
 app.get('/', ToughtsController.ShowToughts);
 
 conn
-    .sync()
-    .then(() => {
-        app.listen(port)
-    })
-    .catch((err) => console.log(err))
+  .sync()
+  .then(() => {
+    app.listen(port)
+  })
+  .catch((err) => console.log(err))
