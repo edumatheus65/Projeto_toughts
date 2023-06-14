@@ -59,7 +59,7 @@ app.use(flash())
 // public path
 app.use(express.static('public'))
 
-// set session response
+// set session response Estou checando se usuário está logado
 app.use((req, res, next) => {
   if (req.session.userid) {
     res.locals.session = req.session
@@ -74,6 +74,7 @@ app.use('/', authRoutes);
 app.get('/', ToughtsController.ShowToughts);
 
 conn
+  // .sync({ force: true})
   .sync()
   .then(() => {
     app.listen(port)
